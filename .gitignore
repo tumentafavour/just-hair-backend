@@ -1,2 +1,10 @@
 venv/
 .env
+migrations/
+__pycache__/
+.vscode/
+vscode/
+coverage/
+.coverage/
+history/
+.history/

@@ -1,0 +1,143 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "Just Hair API",
+        "version": "1.0",
+        "description": "Just Hair API with Role-Based Authentication"
+    },
+    "basePath": "/",
+    "schemes": ["http"],
+
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header",
+            "description": "JWT token: Bearer <token>"
+        },
+        "UserRole": {
+            "type": "apiKey",
+            "name": "X-User-Role",
+            "in": "header",
+            "description": "User role: admin, client, seller"
+        }
+    },
+
+    "paths": {
+        "/": {
+            "get": {
+                "summary": "Welcome message",
+                "description": "This is the welcome message for the Just Hair API",
+                "responses": {
+                    "200": { "description": "Welcome" }
+                }
+            }
+
+        },
+
+        "/test": {
+            "get": {
+                "summary": "Test route",
+                "description": "This is a test route for the Just Hair API",
+
+                "responses": {
+                    "200": { "description": "Test" },
+                    "404": { "description": "Not found" }
+                }
+            }
+        },
+
+        "/register": {
+            "post": {
+                "summary": "User registration",
+                "parameters": [{
+                    "in": "body",
+                    "name": "body",
+                    "required": true,
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "email": { "type": "string" },
+                            "password": { "type": "string" },
+                            "role": { "type": "string" },
+                            "surname": { "type": "string" },
+                            "given_name": { "type": "string" },
+                            "phone_number": { "type": "string" },
+                            "location": { "type": "string" },
+                            "hair_type": { "type": "string" }
+                        }
+                    }
+                }],
+                "responses": {
+                    "201": {
+                        "description": "User registered successfully"
+                    },
+                    "400": {
+                        "description": "Invalid email or password"
+                    }
+                }
+            }
+        },
+
+        "/register/{email}": {
+            "get": {
+                "summary": "User registration",
+                "parameters": [{
+                    "in": "path",
+                    "name": "email",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "User registered successfully"
+                    },
+                    "400": {
+                        "description": "Invalid email or password"
+                    }
+                },
+                "security": [{ "BearerAuth": [] }]
+            }
+        },
+
+        "/protected": {
+            "get": {
+                "summary": "Protected route",
+                "description": "This is a protected route for the Just Hair API",
+                "security": [{ "BearerAuth": [] }],
+                "responses": {
+                    "200": { "description": "Protected" },
+                    "401": { "description": "Unauthorized" }
+                }
+            }
+        },
+
+        "/login": {
+            "post": {
+                "summary": "User login",
+                "parameters": [{
+                    "in": "body",
+                    "name": "body",
+                    "required": true,
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "email": { "type": "string" },
+                            "password": { "type": "string" }
+                        }
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Returns JWT token + role"
+                    },
+                    "401": {
+                        "description": "Invalid credentials"
+                    }
+                }
+            }
+        }
+    }
+}

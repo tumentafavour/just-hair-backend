@@ -1,4 +1,5 @@
-from app import db
+from app import db, bcrypt
+from flask_login import UserMixin
 
 # ============================
 # MANY-TO-MANY: Hairstyles ↔ Hair Attachments
@@ -16,6 +17,10 @@ HairStyle_HairAttachments = db.Table(
 
 class ServiceProviderHairstyle(db.Model):
     __tablename__ = 'service_provider_hairstyles'
+    __table_args__ = (
+    db.UniqueConstraint('service_provider_id', 'hair_style_id'),
+    )
+
 
     id = db.Column(db.Integer, primary_key=True)
     service_provider_id = db.Column(db.Integer, db.ForeignKey('service_providers.id'), nullable=False)
@@ -184,13 +189,19 @@ class ServiceProvider(db.Model):
     role = db.Column(db.String(100), nullable=False)
     surname = db.Column(db.String(100), nullable=False)
     given_name = db.Column(db.String(100), nullable=False)
-    id_card = db.Column(db.String(100), nullable=False)
-    phone_number = db.Column(db.String(20), nullable=False)
+    email = db.Column(db.String(100), nullable=False, unique=True)
+    id_card_number = db.Column(db.String(100), nullable=False)
+    phone_number = db.Column(db.String(20), nullable=True)
     location = db.Column(db.Text, nullable=False)
-    picture = db.Column(db.LargeBinary)
+    picture = db.Column(db.String(100), nullable=True)
     about = db.Column(db.Text)
+    password = db.Column(db.String(200), nullable=False)
 
-    reviews = db.relationship("Review", backref="service_provider", lazy=True)
+
+    def is_service_provider(self):
+        return self.role == "service_provider"
+
+    reviews = db.relationship("Review", backref="service_provider", lazy="joined")
     appointments = db.relationship("Appointment", backref="service_provider", lazy=True)
 
     hairstyle_associations = db.relationship(
@@ -202,6 +213,12 @@ class ServiceProvider(db.Model):
         'ServiceProviderServices',
         back_populates='service_provider'
     )
+    
+    def set_password(self, password):
+        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
+
+    def check_password(self, password):
+        return bcrypt.check_password_hash(self.password, password)
 
     def to_dict(self):
         return {
@@ -209,13 +226,16 @@ class ServiceProvider(db.Model):
             "role": self.role,
             "surname": self.surname,
             "given_name": self.given_name,
-            "id_card": self.id_card,
+            "id_card": self.id_card_number,
             "phone_number": self.phone_number,
             "location": self.location,
             "picture": self.picture,
             "about": self.about,
             "hairstyle_associations": [a.to_dict() for a in self.hairstyle_associations],
-            "services": [s.to_dict() for s in self.service_associations]
+            "services": [s.to_dict() for s in self.service_associations],
+            "appointments": [a.id for a in self.appointments],
+            "reviews": [r.id for r in self.reviews],
+            
         }
 
 # ============================
@@ -228,23 +248,38 @@ class Client(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     surname = db.Column(db.String(100), nullable=False)
     given_name = db.Column(db.String(100), nullable=False)
-    picture = db.Column(db.LargeBinary)
-    contact_info = db.Column(db.String(50), nullable=False)
+    email = db.Column(db.String(100), nullable=False, unique=True)
+    role = db.Column(db.String(100), nullable=False)
+    picture = db.Column(db.String(100), nullable=True)
+    phone_number = db.Column(db.String(20), nullable=True)
     location = db.Column(db.Text, nullable=False)
-    hair_type = db.Column(db.String(100), nullable=False)
-
+    hair_type = db.Column(db.String(100), nullable=True)
+    password = db.Column(db.String(200), nullable=False)
+    
     reviews = db.relationship("Review", backref="client", lazy=True)
     appointments = db.relationship("Appointment", backref="client", lazy=True)
+    
+    
+    def set_password(self, password):
+        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
+
+    def check_password(self, password):
+        return bcrypt.check_password_hash(self.password, password)
+    
+    def is_client(self):
+        return self.role == "client"
 
     def to_dict(self):
         return {
             "id": self.id,
             "surname": self.surname,
             "given_name": self.given_name,
+            "email": self.email,
             "picture": self.picture,
-            "contact_info": self.contact_info,
+            "contact_info": self.phone_number,
             "location": self.location,
-            "hair_type": self.hair_type
+            "hair_type": self.hair_type,
+            "role": self.role
         }
 
 # ============================
@@ -292,6 +327,7 @@ class Appointment(db.Model):
     service_provider_id = db.Column(db.Integer, db.ForeignKey('service_providers.id'), nullable=False)
     client_id = db.Column(db.Integer, db.ForeignKey('clients.id'), nullable=False)
     hair_style_id = db.Column(db.Integer, db.ForeignKey('hair_styles.id'))
+    hair_style = db.relationship("HairStyle")
 
     def to_dict(self):
         return {
@@ -303,8 +339,10 @@ class Appointment(db.Model):
             "venue": self.venue,
             "price": self.price,
             "duration": self.duration,
-            "status": self.status
+            "status": self.status,
+            "hair_style": self.hair_style
         }
+
 
 # ============================
 # SERVICE ALIASES
