@@ -138,6 +138,81 @@
                     }
                 }
             }
+        },
+
+        "/logout": {
+            "post": {
+                "summary": "User logout",
+                "security": [{ "BearerAuth": [] }],
+                "responses": {
+                    "200": {
+                        "description": "Logout successful"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                }
+            }
+        },
+
+        "/clients": {
+            "get": {
+                "summary": "Get all clients",
+                "security": [{ "BearerAuth": [] }],
+                "responses": {
+                    "200": {
+                        "description": "Returns all clients"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                }
+            }
+        },
+
+        "/services": {
+            "get": {
+                "summary": "Get all services",
+                "security": [{ "BearerAuth": [] }],
+                "responses": {
+                    "200": {
+                        "description": "Returns all services"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                }
+            }
+        },
+
+        "/hair_types": {
+            "get": {
+                "summary": "Get all hair types",
+                "security": [{ "BearerAuth": [] }],
+                "responses": {
+                    "200": {
+                        "description": "Returns all hair types"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                }
+            }
+        },
+
+        "/hair_attachments": {
+            "get": {
+                "summary": "Get all hair attachments",
+                "security": [{ "BearerAuth": [] }],
+                "responses": {
+                    "200": {
+                        "description": "Returns all hair attachments"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                }
+            }
         }
     }
 }
