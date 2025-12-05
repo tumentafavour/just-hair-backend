@@ -7,8 +7,15 @@ load_dotenv()
 
 class Config:
     
-    SQLALCHEMY_DATABASE_URI = os.getenv("SQLALCHEMY_DATABASE_URI")
-    # SQLALCHEMY_DATABASE_URI = os.getenv("AIVEN_SERVICE_URI")
+    # SQLALCHEMY_DATABASE_URI = os.getenv("SQLALCHEMY_DATABASE_URI")
+    # SQLALCHEMY_DATABASE_URI = os.getenv("AIVEN_DATABASE_URI")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(days=1)
+    
+    ENV = os.getenv("FLASK_ENV", "development")
+    if ENV == "production":
+        SQLALCHEMY_DATABASE_URI = os.getenv("AIVEN_DATABASE_URI")
+    else:
+        SQLALCHEMY_DATABASE_URI = os.getenv("SQLALCHEMY_DATABASE_URI")
+

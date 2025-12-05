@@ -11,7 +11,7 @@ import os
 
 
 
-limiter = Limiter(key_func=get_remote_address, default_limits=["200 per day", "50 per hour"])  # no app yet
+limiter = Limiter(key_func=get_remote_address, default_limits=["500 per day", "100 per hour"])  # no app yet
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -29,7 +29,13 @@ def create_app():
     jwt.init_app(app)
     limiter.init_app(app)
 
-    CORS(app)
+    # CORS(app, resources={r"/*": {"origins": "*"}})
+    CORS(
+    app,
+    resources={r"/*": {"origins": "*"}},
+    supports_credentials=True
+)
+
 
     # swagger
     from flask_swagger_ui import get_swaggerui_blueprint

@@ -1,222 +1,262 @@
 {
-  "swagger": "2.0",
-  "info": {
-    "title": "Just Hair API",
-    "version": "1.0",
-    "description": "Just Hair API with Role-Based Authentication"
-  },
-  "basePath": "/",
-  "schemes": ["http"],
-
-  "securityDefinitions": {
-    "BearerAuth": {
-      "type": "apiKey",
-      "name": "Authorization",
-      "in": "header",
-      "description": "JWT token: Bearer <token>"
+    "openapi": "3.1.0",
+    "info": {
+        "title": "Just Hair API",
+        "version": "1.0",
+        "description": "Just Hair API with Role-Based Authentication"
     },
-    "UserRole": {
-      "type": "apiKey",
-      "name": "X-User-Role",
-      "in": "header",
-      "description": "User role: admin, client, seller"
-    }
-  },
+    "servers": [{
+        "url": "https://just-hair-backend-4e86.onrender.com"
+    }, {
+        "url": "http://localhost:5000"
+    }, {
+        "url": "http://localhost:3000"
+    }],
 
-  "paths": {
-    "/": {
-      "get": {
-        "summary": "Welcome message",
-        "description": "This is the welcome message for the Just Hair API",
-        "responses": {
-          "200": { "description": "Welcome" }
-        }
-      }
-    },
-
-    "/test": {
-      "get": {
-        "summary": "Test route",
-        "description": "This is a test route for the Just Hair API",
-
-        "responses": {
-          "200": { "description": "Test" },
-          "404": { "description": "Not found" }
-        }
-      }
-    },
-
-    "/register": {
-      "post": {
-        "summary": "User registration",
-        "parameters": [
-          {
-            "in": "body",
-            "name": "body",
-            "required": true,
-            "schema": {
-              "type": "object",
-              "properties": {
-                "email": { "type": "string" },
-                "password": { "type": "string" },
-                "surname": { "type": "string" },
-                "given_name": { "type": "string" },
-                "phone_number": { "type": "string" },
-                "location": { "type": "string" },
-                "hair_type": { "type": "string" }
-              }
+    "components": {
+        "securitySchemes": {
+            "BearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT",
+                "description": "JWT token: Bearer <token>"
+            },
+            "UserRole": {
+                "type": "apiKey",
+                "name": "X-User-Role",
+                "in": "header",
+                "description": "User role: admin, client, seller"
             }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "User registered successfully"
-          },
-          "400": {
-            "description": "Invalid email or password"
-          }
-        }
-      }
-    },
-
-    "/register/{email}": {
-      "get": {
-        "summary": "User registration",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "email",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "User registered successfully"
-          },
-          "400": {
-            "description": "Invalid email or password"
-          }
         },
-        "security": [{ "BearerAuth": [] }]
-      }
-    },
 
-    "/protected": {
-      "get": {
-        "summary": "Protected route",
-        "description": "This is a protected route for the Just Hair API",
-        "security": [{ "BearerAuth": [] }],
-        "responses": {
-          "200": { "description": "Protected" },
-          "401": { "description": "Unauthorized" }
-        }
-      }
-    },
+        "schemas": {
+            "RegisterRequest": {
+                "type": "object",
+                "properties": {
+                    "email": { "type": "string" },
+                    "password": { "type": "string" },
+                    "surname": { "type": "string" },
+                    "given_name": { "type": "string" },
+                    "phone_number": { "type": "string" },
+                    "location": { "type": "string" },
+                    "hair_type": { "type": "string" }
+                },
+                "required": ["email", "password"]
+            },
 
-    "/login": {
-      "post": {
-        "summary": "User login",
-        "parameters": [
-          {
-            "in": "body",
-            "name": "body",
-            "required": true,
-            "schema": {
-              "type": "object",
-              "properties": {
-                "email": { "type": "string" },
-                "password": { "type": "string" }
-              }
+            "LoginRequest": {
+                "type": "object",
+                "properties": {
+                    "email": { "type": "string" },
+                    "password": { "type": "string" }
+                },
+                "required": ["email", "password"]
             }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Returns JWT token + role"
-          },
-          "401": {
-            "description": "Invalid credentials"
-          }
         }
-      }
     },
 
-    "/logout": {
-      "post": {
-        "summary": "User logout",
-        "security": [{ "BearerAuth": [] }],
-        "responses": {
-          "200": {
-            "description": "Logout successful"
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        }
-      }
-    },
+    "paths": {
+        "/": {
+            "get": {
+                "summary": "Welcome message",
+                "description": "This is the welcome message for the Just Hair API",
+                "responses": {
+                    "200": {
+                        "description": "Welcome"
+                    }
+                }
+            }
+        },
 
-    "/clients": {
-      "get": {
-        "summary": "Get all clients",
-        "security": [{ "BearerAuth": [] }],
-        "responses": {
-          "200": {
-            "description": "Returns all clients"
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        }
-      }
-    },
+        "/test": {
+            "get": {
+                "summary": "Test route",
+                "description": "This is a test route for the Just Hair API",
+                "responses": {
+                    "200": { "description": "Test" },
+                    "404": { "description": "Not found" }
+                }
+            }
+        },
 
-    "/services": {
-      "get": {
-        "summary": "Get all services",
-        "security": [{ "BearerAuth": [] }],
-        "responses": {
-          "200": {
-            "description": "Returns all services"
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        }
-      }
-    },
+        "/register": {
+            "post": {
+                "summary": "User registration",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RegisterRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "User registered successfully"
+                    },
+                    "400": {
+                        "description": "Invalid email or password"
+                    }
+                }
+            }
+        },
 
-    "/hair_types": {
-      "get": {
-        "summary": "Get all hair types",
-        "security": [{ "BearerAuth": [] }],
-        "responses": {
-          "200": {
-            "description": "Returns all hair types"
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        }
-      }
-    },
+        "/register/{email}": {
+            "get": {
+                "summary": "Get user by email",
+                "parameters": [{
+                    "name": "email",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }],
+                "security": [
+                    { "BearerAuth": [] }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User fetched successfully"
+                    },
+                    "400": {
+                        "description": "Invalid email"
+                    }
+                }
+            }
+        },
 
-    "/hair_attachments": {
-      "get": {
-        "summary": "Get all hair attachments",
-        "security": [{ "BearerAuth": [] }],
-        "responses": {
-          "200": {
-            "description": "Returns all hair attachments"
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
+        "/protected": {
+            "get": {
+                "summary": "Protected route",
+                "description": "This is a protected route for the Just Hair API",
+                "security": [
+                    { "BearerAuth": [] }
+                ],
+                "responses": {
+                    "200": { "description": "Protected" },
+                    "401": { "description": "Unauthorized" }
+                }
+            }
+        },
+
+        "/login": {
+            "post": {
+                "summary": "User login",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LoginRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Returns JWT token + role",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "token": "jwt-token-here",
+                                    "role": "client"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid credentials"
+                    }
+                }
+            }
+        },
+
+        "/logout": {
+            "post": {
+                "summary": "User logout",
+                "security": [
+                    { "BearerAuth": [] }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Logout successful"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                }
+            }
+        },
+
+        "/clients": {
+            "get": {
+                "summary": "Get all clients",
+                "security": [
+                    { "BearerAuth": [] }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns all clients"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                }
+            }
+        },
+
+        "/services": {
+            "get": {
+                "summary": "Get all services",
+                "security": [
+                    { "BearerAuth": [] }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns all services"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                }
+            }
+        },
+
+        "/hair_types": {
+            "get": {
+                "summary": "Get all hair types",
+                "security": [
+                    { "BearerAuth": [] }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns all hair types"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                }
+            }
+        },
+
+        "/hair_attachments": {
+            "get": {
+                "summary": "Get all hair attachments",
+                "security": [
+                    { "BearerAuth": [] }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns all hair attachments"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                }
+            }
         }
-      }
     }
-  }
 }
