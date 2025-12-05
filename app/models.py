@@ -54,7 +54,7 @@ class ServiceProviderServices(db.Model):
     service_id = db.Column(db.Integer, db.ForeignKey('services.id'), nullable=False)
 
     price = db.Column(db.Integer, nullable=False)
-    picture = db.Column(db.LargeBinary)
+    picture = db.Column(db.String(100), nullable=True)
     duration_minutes = db.Column(db.Integer, nullable=False)
 
     service_provider = db.relationship("ServiceProvider", back_populates="service_associations")
@@ -79,7 +79,7 @@ class HairStyle(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
-    picture = db.Column(db.LargeBinary)
+    picture = db.Column(db.String(100), nullable=True)
     category = db.Column(db.String(100), nullable=False)
 
     attachments = db.relationship(
@@ -131,7 +131,7 @@ class HairAttachment(db.Model):
     __tablename__ = 'hair_attachments'
 
     id = db.Column(db.Integer, primary_key=True)
-    picture = db.Column(db.LargeBinary)
+    picture = db.Column(db.String(100), nullable=True)
     name = db.Column(db.String(100), nullable=False)
     color = db.Column(db.String(100), nullable=False)
     texture = db.Column(db.String(100), nullable=False)
@@ -191,7 +191,7 @@ class ServiceProvider(db.Model):
     given_name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), nullable=False, unique=True)
     id_card_number = db.Column(db.String(100), nullable=False)
-    phone_number = db.Column(db.String(20), nullable=True)
+    phone_number = db.Column(db.String(20), nullable=False)
     location = db.Column(db.Text, nullable=False)
     picture = db.Column(db.String(100), nullable=True)
     about = db.Column(db.Text)
@@ -226,7 +226,7 @@ class ServiceProvider(db.Model):
             "role": self.role,
             "surname": self.surname,
             "given_name": self.given_name,
-            "id_card": self.id_card_number,
+            "id_card_number": self.id_card_number,
             "phone_number": self.phone_number,
             "location": self.location,
             "about": self.about,
@@ -234,7 +234,6 @@ class ServiceProvider(db.Model):
             "services": [s.id for s in self.service_associations],
             "appointments": [a.id for a in self.appointments],
             "reviews": [r.id for r in self.reviews],
-            
         }
 
 # ============================
@@ -247,10 +246,10 @@ class Client(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     surname = db.Column(db.String(100), nullable=False)
     given_name = db.Column(db.String(100), nullable=False)
-    email = db.Column(db.String(100), nullable=False, unique=True)
+    email = db.Column(db.String(100), nullable=False, unique=False)
     role = db.Column(db.String(100), nullable=False, default='client')
     picture = db.Column(db.String(100), nullable=True)
-    phone_number = db.Column(db.String(20), nullable=True)
+    phone_number = db.Column(db.String(20), nullable=False)
     location = db.Column(db.Text, nullable=False)
     hair_type = db.Column(db.String(100), nullable=True)
     password = db.Column(db.String(200), nullable=False)

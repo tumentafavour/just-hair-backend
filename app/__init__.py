@@ -6,6 +6,9 @@ from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from flask_swagger_ui import get_swaggerui_blueprint
+import os
+
 
 
 limiter = Limiter(key_func=get_remote_address, default_limits=["200 per day", "50 per hour"])  # no app yet
@@ -51,6 +54,10 @@ def create_app():
     # register blueprints
     from app.routes.routes import routes_bp
     app.register_blueprint(routes_bp)
+    from app.routes.hairattachment import hairattachment_bp
+    app.register_blueprint(hairattachment_bp)
+    from app.routes.serviceprovider import serviceprovider_bp
+    app.register_blueprint(serviceprovider_bp)
 
     return app
 
