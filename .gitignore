@@ -8,3 +8,11 @@ coverage/
 .coverage/
 history/
 .history/
+instance/
+.pytest_cache/
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+*.db
+*.log
